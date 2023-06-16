@@ -1,0 +1,3 @@
+document.getElementById("play").innerHTML = "";
+
+
