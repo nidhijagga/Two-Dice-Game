@@ -32,12 +32,18 @@ io.on("connection", (socket)=>{
                 let p1obj = {
                     p1name : arr[0],
                     p1value : "Player1",
-                    p1count : 0
+                    p1count : 0,
+                    p1dice : 0,
+                    p1current : 0,
+                    p1status : true,
                 }
                 let p2obj = {
                     p2name : arr[1],
                     p2value : "Player2",
-                    p2count : 0
+                    p2count : 0,
+                    p2dice : 0,
+                    p2current : 0,
+                    p2status : false,
                 }
                 let obj = {
                     p1 : p1obj,
@@ -51,6 +57,52 @@ io.on("connection", (socket)=>{
                 io.emit("find", {allPlayers : playingArr})
             }
         }
+    })
+
+    //Rolling the Dice
+
+    socket.on("dice", (e)=>{
+        let objToChange; 
+        for(let i=0 ;i<playingArr.length;i++){
+            if(playingArr[i].p1.p1name == e.name){
+                objToChange = playingArr[i];
+                //Updating data in obj
+                objToChange.currentPlayed = e.name
+                if(e.dice !== 1){   
+                    objToChange.p1.p1dice = 0;
+                    objToChange.p1.p1dice += e.dice;
+                    objToChange.p1.p1current += e.dice;
+                }
+                else{
+                    objToChange.p1.p1status = false;
+                    objToChange.p2.p2status = true;
+                    objToChange.p1.p1current = 0;
+                    objToChange.p1.p1dice = 1;
+                }
+                break;
+
+            }
+            else if(playingArr[i].p2.p2name == e.name){
+                objToChange = playingArr[i];
+                objToChange.currentPlayed = e.name
+                //Updating data in obj
+                if(e.dice !== 1){   
+                    objToChange.p2.p2dice = 0;
+                    objToChange.p2.p2dice += e.dice;
+                    objToChange.p2.p2current += e.dice;
+                }
+                else{
+                    objToChange.p2.p2status = false;
+                    objToChange.p1.p1status = true;
+                    objToChange.p2.p2current = 0;
+                    objToChange.p2.p2dice = 1;
+                }
+                break;
+            }
+        }
+
+        //Sending the updated data
+        io.emit("dice", {allPlayers : playingArr});
     })
 })
 

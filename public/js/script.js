@@ -4,11 +4,19 @@ playElements.forEach(function (element) {
 });
 document.getElementById("loading").style.display = "none";
 
-const score0El = document.getElementById("score--0");
-const score1El = document.getElementById("score--1");
-const diceEl = document.querySelector(".dice");
+let score0El = document.getElementById("score--0");
+let score1El = document.getElementById("score--1");
+let name0El = document.getElementById("name--0");
+let name1El = document.getElementById("name--1");
+let diceEl = document.querySelector(".dice");
+let btnNew = document.querySelector(".btn--new");
+let btnRoll = document.querySelector(".btn--roll");
+let btnHold = document.querySelector(".btn--hold");
 
 const socket = io();
+
+
+//Finding the Players
 
 let name;
 
@@ -26,6 +34,8 @@ document.getElementById("searchBtn").addEventListener("click", function () {
   }
 });
 
+
+
 socket.on("find", (e) => {
   let allPlayersArray = e.allPlayers;
 
@@ -40,12 +50,56 @@ socket.on("find", (e) => {
   }
 
   let oppName;
-  let value;
 
-  // const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
-  // foundObject.p1.p1name == `${name}` ? oppName = foundObject.p2.p2name : oppName = foundObject.p1.p1name
-  // foundObject.p1.p1name == `${name}` ? value = foundObject.p1.p1value : value = foundObject.p2.p2value
+  const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
+  
+  if(foundObject.p1.p1name == `${name}`){
+    oppName = foundObject.p2.p2name;
+    name0El.textContent = name;
+    name1El.textContent = oppName;
+  }
+  else{
+    oppName = foundObject.p1.p1name;
+    name0El.textContent = oppName;
+    name1El.textContent = name;
+  }
 
-  // document.getElementById("oppName").innerText = oppName
-  // document.getElementById("value").innerText = value
+ 
 });
+
+
+//Rolling the dice
+
+btnRoll.addEventListener("click", (e)=>{
+  const dice = Math.trunc(Math.random() * 6) + 1;
+  socket.emit("dice", {dice : dice, name : name});
+})
+
+socket.on("dice", (e)=>{
+  const allPlayersArray = e.allPlayers;
+  const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
+
+  let you;
+  if(foundObject.p1.p1name == `${name}`){
+    you = "p1";
+  }
+  else{
+    you = "p2";
+  }
+  
+  diceEl.style.display = "block";
+
+  if(foundObject.currentPlayed == `${name}` && you == "p1"){
+    diceEl.src = `/img/dice-${foundObject.p1.p1dice}.png`
+  }
+  else if(foundObject.currentPlayed == `${name}` && you == "p2"){
+    diceEl.src = `/img/dice-${foundObject.p2.p2dice}.png`
+  }
+  else if(foundObject.currentPlayed !== `${name}` && you == "p1"){
+    diceEl.src = `/img/dice-${foundObject.p2.p2dice}.png`
+  }
+  else{
+    diceEl.src = `/img/dice-${foundObject.p1.p1dice}.png`
+  }
+})
+
