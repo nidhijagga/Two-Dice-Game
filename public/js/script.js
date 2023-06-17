@@ -6,6 +6,8 @@ document.getElementById("loading").style.display = "none";
 
 let score0El = document.getElementById("score--0");
 let score1El = document.getElementById("score--1");
+let player0El = document.querySelector(".player--0");
+let player1El = document.querySelector(".player--1");
 let name0El = document.getElementById("name--0");
 let name1El = document.getElementById("name--1");
 let current0El = document.getElementById("current--0");
@@ -84,16 +86,32 @@ socket.on("dice", (e)=>{
   let you = foundObject.p1.p1name === name ? "p1" : "p2";
   diceEl.style.display = "block";
   
+  let activeStatus = true;
+
   if (foundObject.currentPlayed === name) {
     diceEl.src = `/img/dice-${you === "p1" ? foundObject.p1.p1dice : foundObject.p2.p2dice}.png`;
 
     you === "p1" ? (current0El.textContent = foundObject.p1.p1current) : (current1El.textContent = foundObject.p2.p2current);
+
+    you === "p1" ? (activeStatus = foundObject.p1.p1status) : (activeStatus = foundObject.p2.p2status) 
+
+    if(activeStatus == false){
+      player0El.classList.toggle("player--active");
+      player1El.classList.toggle("player--active");
+    }
 
 
   } else {
     diceEl.src = `/img/dice-${you === "p1" ? foundObject.p2.p2dice : foundObject.p1.p1dice}.png`;
 
     you === "p1" ? (current1El.textContent = foundObject.p2.p2current) : (current0El.textContent = foundObject.p1.p1current);
+
+    you === "p1" ? (activeStatus = foundObject.p2.p2status) : (activeStatus = foundObject.p1.p1status) 
+
+    if(activeStatus == false){
+      player0El.classList.toggle("player--active");
+      player1El.classList.toggle("player--active");
+    }
 
   }
   
