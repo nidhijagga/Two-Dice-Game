@@ -28,7 +28,7 @@ io.on("connection", (socket)=>{
     socket.on("find", (e)=>{
         if(e.name!==null){
             arr.push(e.name);
-            if(arr.length >= 2){
+            if(arr.length == 2){
                 let p1obj = {
                     p1name : arr[0],
                     p1value : "Player1",

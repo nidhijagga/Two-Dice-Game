@@ -19,7 +19,6 @@ let btnHold = document.querySelector(".btn--hold");
 
 const socket = io();
 
-
 //Finding the Players
 
 let name;
@@ -38,8 +37,6 @@ document.getElementById("searchBtn").addEventListener("click", function () {
   }
 });
 
-
-
 socket.on("find", (e) => {
   let allPlayersArray = e.allPlayers;
 
@@ -55,65 +52,89 @@ socket.on("find", (e) => {
 
   let oppName;
 
-  const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
-  
-  if(foundObject.p1.p1name == `${name}`){
+  const foundObject = allPlayersArray.find(
+    (obj) => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`
+  );
+
+  if (foundObject.p1.p1name == `${name}`) {
     oppName = foundObject.p2.p2name;
     name0El.textContent = name;
     name1El.textContent = oppName;
-  }
-  else{
+  } else {
     oppName = foundObject.p1.p1name;
     name0El.textContent = oppName;
     name1El.textContent = name;
+
+    //Getting rid of working of buttons when not your turn.
+    btnRoll.disabled = true;
+    btnHold.disabled = true;
   }
-
- 
 });
-
 
 //Rolling the dice
 
-btnRoll.addEventListener("click", (e)=>{
+btnRoll.addEventListener("click", (e) => {
   const dice = Math.trunc(Math.random() * 6) + 1;
-  socket.emit("dice", {dice : dice, name : name});
-})
+  socket.emit("dice", { dice: dice, name: name });
+});
 
-socket.on("dice", (e)=>{
+socket.on("dice", (e) => {
   const allPlayersArray = e.allPlayers;
-  const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
+  const foundObject = allPlayersArray.find(
+    (obj) => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`
+  );
 
   let you = foundObject.p1.p1name === name ? "p1" : "p2";
   diceEl.style.display = "block";
-  
+
   let activeStatus = true;
 
   if (foundObject.currentPlayed === name) {
-    diceEl.src = `/img/dice-${you === "p1" ? foundObject.p1.p1dice : foundObject.p2.p2dice}.png`;
+    diceEl.src = `/img/dice-${
+      you === "p1" ? foundObject.p1.p1dice : foundObject.p2.p2dice
+    }.png`;
 
-    you === "p1" ? (current0El.textContent = foundObject.p1.p1current) : (current1El.textContent = foundObject.p2.p2current);
+    you === "p1"
+      ? (current0El.textContent = foundObject.p1.p1current)
+      : (current1El.textContent = foundObject.p2.p2current);
 
-    you === "p1" ? (activeStatus = foundObject.p1.p1status) : (activeStatus = foundObject.p2.p2status) 
+    you === "p1"
+      ? (activeStatus = foundObject.p1.p1status)
+      : (activeStatus = foundObject.p2.p2status);
 
-    if(activeStatus == false){
+    if (activeStatus == false) {
       player0El.classList.toggle("player--active");
       player1El.classList.toggle("player--active");
+      //Getting rid of working of buttons when not your turn.
+      btnRoll.disabled = true;
+      btnHold.disabled = true;
     }
-
-
   } else {
-    diceEl.src = `/img/dice-${you === "p1" ? foundObject.p2.p2dice : foundObject.p1.p1dice}.png`;
+    //This all updating the data for the player currently playing
+    //(When not your turn)
 
-    you === "p1" ? (current1El.textContent = foundObject.p2.p2current) : (current0El.textContent = foundObject.p1.p1current);
+    //Updating the dice value when other player rolled the dice.
+    diceEl.src = `/img/dice-${
+      you === "p1" ? foundObject.p2.p2dice : foundObject.p1.p1dice
+    }.png`;
 
-    you === "p1" ? (activeStatus = foundObject.p2.p2status) : (activeStatus = foundObject.p1.p1status) 
+    //Updating the current score of other player.
+    you === "p1"
+      ? (current1El.textContent = foundObject.p2.p2current)
+      : (current0El.textContent = foundObject.p1.p1current);
 
-    if(activeStatus == false){
+    //Checking the active status of other player
+    //(If active status is false than toggling the classes to show the active status on DOM)
+    you === "p1"
+      ? (activeStatus = foundObject.p2.p2status)
+      : (activeStatus = foundObject.p1.p1status);
+
+    if (activeStatus == false) {
       player0El.classList.toggle("player--active");
       player1El.classList.toggle("player--active");
+      //Getting rid of working of buttons when not your turn.
+      btnRoll.disabled = false;
+      btnHold.disabled = false;
     }
-
   }
-  
-})
-
+});
