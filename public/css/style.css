@@ -16,7 +16,7 @@ body {
   font-weight: 400;
   height: 100vh;
   color: #333;
-  background-image: linear-gradient(to top left, #753682 0%, #bf2e34 100%);
+  background-image: linear-gradient(to top left, #161925ff 0%, #406e8eff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,7 +56,7 @@ main {
 }
 
 .current {
-  background-color: #c7365f;
+  background-color: #23395bff;
   opacity: 0.8;
   border-radius: 9px;
   color: #fff;
@@ -85,7 +85,7 @@ main {
 .score {
   font-size: 8rem;
   font-weight: 300;
-  color: #c7365f;
+  color: #23395bff;
   margin-bottom: 80px;
 }
 
@@ -104,7 +104,7 @@ main {
 }
 
 /* .current {
-  background-color: #c7365f;
+  background-color: #23395bff;
   opacity: 0.8;
   border-radius: 9px;
   color: #fff;
@@ -158,6 +158,9 @@ main {
 .btn--new {
   top: 4rem;
 }
+.btn--new:hover{
+  background-color : rgb(255, 255, 255)
+}
 .btn--roll {
   top: 39.3rem;
 }
@@ -167,7 +170,7 @@ main {
 
 .btn:active {
   transform: translate(-50%, 3px);
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1rem 2rem rgba(94, 94, 94, 0.15);
 }
 
 .btn:focus {
@@ -184,14 +187,19 @@ main {
 }
 
 .player--winner {
-  background-color: #2f2f2f;
+  background-color: #161925ff;
 }
 
 .player--winner .name {
   font-weight: 700;
-  color: #c7365f;
+  color: rgb(255, 255, 255);
 }
 
+
+.player--winner .score {
+  font-weight: 700;
+  color: rgb(255, 255, 255);
+}
 .search h1 {
   font-size: 30px;
   margin-bottom: 10px;
@@ -206,12 +214,20 @@ main {
   font-size: 48px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   color: #ffffff;
-  background-color: #c7365f;
+  background-color: #23395bff;
   padding: 10px 20px;
   border-radius: 10px;
   margin-bottom: 50px;
 }
 
 #find:hover{
-  background-color : #753682
-}
+  background-color : #406e8eff;
+} 
+
+
+/* CSS HEX
+--raisin-black: #161925ff;
+--delft-blue: #23395bff;
+--ucla-blue: #406e8eff;
+--powder-blue: #8ea8c3ff;
+--mint-green: #cbf7edff; */
