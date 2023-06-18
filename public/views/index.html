@@ -15,18 +15,25 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="/css/style.css" />
-    <title>Pig Game</title>
+    <title>Dice Game</title>
   </head>
   <body>
     <main id="main">
       <div id="search"
-        class="container d-flex flex-column justify-content-center align-items-center vh-10"
+        class="container d-flex flex-column justify-content-center align-items-center vh-20"
       >
+      
+      
         <div>
-          <h1 class="heading">Pig-Game</h1>
+          <h1 class="heading mt-0 my-4">TwoPlayer-Dice-Game</h1>
         </div>
 
-        <div class="search mb-4">
+        <div>
+          <p class="fs-4" style="color: white;"> (Rules : Roll the Dice as many times you want, You can hold the number you have in current to add to your actual score, <br>If you get the 1 on dice, you can't hold the any number after that. Whoever scores the 100 first will win the game.)
+          </p>
+        </div>
+
+        <div class="search mt-4 mb-4">
           <h1>Enter your name:</h1>
           <input
             type="text"
@@ -50,7 +57,7 @@
           style="width: 30px; height: 30px; opacity: 0.5"
         />
       </div>
-
+      
       
         <section class="play player player--0 player--active">
           <h2 class="name" id="name--0">Player 1</h2>

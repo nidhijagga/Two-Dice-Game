@@ -183,7 +183,7 @@ function checkWinCondition(foundObject, player) {
   const playerEl = player === "p1" ? player0El : player1El;
   const playerCount = foundObject[player][player + "count"];
   
-  if (playerCount >= 10) {
+  if (playerCount >= 100) {
     playerEl.classList.remove("player--active");
     playerEl.classList.add("player--winner");
     hideButtons();
