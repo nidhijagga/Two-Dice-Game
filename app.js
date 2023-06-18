@@ -141,7 +141,6 @@ io.on("connection", (socket)=>{
                 break;
             }
         }
-        console.log(playingArr);
         io.emit("newGame", {allPlayers : playingArr});
     })
 })
