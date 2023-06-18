@@ -195,6 +195,7 @@ function hideButtons() {
   btnHold.style.display = "none";
 }
 
+
 //New Game
 btnNew.addEventListener("click", ()=>{
   location.reload();
