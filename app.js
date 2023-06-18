@@ -133,6 +133,17 @@ io.on("connection", (socket)=>{
          //Sending the updated data
          io.emit("hold", {allPlayers : playingArr});
     })
+
+    socket.on("newGame", (e)=>{
+        for(let i = 0; i<playingArr.length; i++){
+            if(playingArr[i].p1.p1name == e.name || playingArr[i].p2.p2name == e.name){
+                playingArr.splice(i, 1);
+                break;
+            }
+        }
+        console.log(playingArr);
+        io.emit("newGame", {allPlayers : playingArr});
+    })
 })
 
 

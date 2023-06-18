@@ -198,5 +198,14 @@ function hideButtons() {
 
 //New Game
 btnNew.addEventListener("click", ()=>{
+  socket.emit("newGame", {name : name});
   location.reload();
 })
+
+socket.on("newGame", (e) => {
+  const foundObject = findPlayerByName(e.allPlayers, name);
+  if (!foundObject) {
+    alert("Click on new Game, One Player Left");
+    window.location.reload();
+  }
+});
