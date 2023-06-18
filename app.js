@@ -48,6 +48,7 @@ io.on("connection", (socket)=>{
                 let obj = {
                     p1 : p1obj,
                     p2 : p2obj,
+                    currentPlayed : "",
                 }
                 playingArr.push(obj);
 
@@ -103,6 +104,34 @@ io.on("connection", (socket)=>{
 
         //Sending the updated data
         io.emit("dice", {allPlayers : playingArr});
+    })
+
+    //Holding the number
+
+    socket.on("hold", (e)=>{
+        let objToChange;
+        for(let i=0; i<playingArr.length; i++){
+            if(playingArr[i].p1.p1name == e.name){
+                objToChange = playingArr[i];
+                objToChange.currentPlayed = e.name;
+                objToChange.p1.p1count += objToChange.p1.p1current;
+                objToChange.p1.p1current = 0;
+                objToChange.p1.p1status = false;
+                objToChange.p2.p2status = true;
+
+            }
+            else if(playingArr[i].p2.p2name == e.name){
+                objToChange = playingArr[i];
+                objToChange.currentPlayed = e.name;
+                objToChange.p2.p2count += objToChange.p2.p2current;
+                objToChange.p2.p2current = 0;
+                objToChange.p2.p2status = false;
+                objToChange.p1.p1status = true;
+            }
+        }
+
+         //Sending the updated data
+         io.emit("hold", {allPlayers : playingArr});
     })
 })
 

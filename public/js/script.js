@@ -78,63 +78,124 @@ btnRoll.addEventListener("click", (e) => {
   socket.emit("dice", { dice: dice, name: name });
 });
 
-socket.on("dice", (e) => {
-  const allPlayersArray = e.allPlayers;
-  const foundObject = allPlayersArray.find(
-    (obj) => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`
-  );
+socket.on("dice", handleDiceEvent);
 
-  let you = foundObject.p1.p1name === name ? "p1" : "p2";
+function handleDiceEvent(eventData) {
+  const allPlayersArray = eventData.allPlayers;
+  const foundObject = findPlayerByName(allPlayersArray, name);
+
+  const currentPlayer = foundObject.p1.p1name === name ? "p1" : "p2";
   diceEl.style.display = "block";
 
   let activeStatus = true;
 
   if (foundObject.currentPlayed === name) {
-    diceEl.src = `/img/dice-${
-      you === "p1" ? foundObject.p1.p1dice : foundObject.p2.p2dice
-    }.png`;
+    const currentDice = currentPlayer === "p1" ? foundObject.p1.p1dice : foundObject.p2.p2dice;
+    const currentScoreEl = currentPlayer === "p1" ? current0El : current1El;
 
-    you === "p1"
-      ? (current0El.textContent = foundObject.p1.p1current)
-      : (current1El.textContent = foundObject.p2.p2current);
+    diceEl.src = `/img/dice-${currentDice}.png`;
+    currentScoreEl.textContent = foundObject[currentPlayer][currentPlayer + "current"];
+    activeStatus = foundObject[currentPlayer][currentPlayer + "status"];
 
-    you === "p1"
-      ? (activeStatus = foundObject.p1.p1status)
-      : (activeStatus = foundObject.p2.p2status);
-
-    if (activeStatus == false) {
-      player0El.classList.toggle("player--active");
-      player1El.classList.toggle("player--active");
-      //Getting rid of working of buttons when not your turn.
-      btnRoll.disabled = true;
-      btnHold.disabled = true;
+    if (!activeStatus) {
+      toggleActivePlayers();
+      disableButtons();
     }
   } else {
-    //This all updating the data for the player currently playing
-    //(When not your turn)
+    const otherPlayer = currentPlayer === "p1" ? "p2" : "p1";
+    const otherDice = currentPlayer === "p1" ? foundObject.p2.p2dice : foundObject.p1.p1dice;
+    const otherScoreEl = currentPlayer === "p1" ? current1El : current0El;
 
-    //Updating the dice value when other player rolled the dice.
-    diceEl.src = `/img/dice-${
-      you === "p1" ? foundObject.p2.p2dice : foundObject.p1.p1dice
-    }.png`;
+    diceEl.src = `/img/dice-${otherDice}.png`;
+    otherScoreEl.textContent = foundObject[otherPlayer][otherPlayer + "current"];
+    activeStatus = foundObject[otherPlayer][otherPlayer + "status"];
 
-    //Updating the current score of other player.
-    you === "p1"
-      ? (current1El.textContent = foundObject.p2.p2current)
-      : (current0El.textContent = foundObject.p1.p1current);
-
-    //Checking the active status of other player
-    //(If active status is false than toggling the classes to show the active status on DOM)
-    you === "p1"
-      ? (activeStatus = foundObject.p2.p2status)
-      : (activeStatus = foundObject.p1.p1status);
-
-    if (activeStatus == false) {
-      player0El.classList.toggle("player--active");
-      player1El.classList.toggle("player--active");
-      //Getting rid of working of buttons when not your turn.
-      btnRoll.disabled = false;
-      btnHold.disabled = false;
+    if (!activeStatus) {
+      toggleActivePlayers();
+      enableButtons();
     }
   }
+}
+
+
+//Holding the number
+
+btnHold.addEventListener("click", () => {
+  socket.emit("hold", { name: name });
 });
+
+socket.on("hold", handleHoldEvent);
+
+function handleHoldEvent(eventData) {
+  const allPlayersArray = eventData.allPlayers;
+  const foundObject = findPlayerByName(allPlayersArray, name);
+  
+  toggleActivePlayers();
+
+  let currentPlayer = foundObject.p1.p1name === name ? "p1" : "p2";
+  
+  if (foundObject.currentPlayed === name) {
+    disableButtons();
+
+    updateScoreUI(foundObject, currentPlayer);
+    checkWinCondition(foundObject, currentPlayer);
+  } else {
+    enableButtons();
+
+    const otherPlayer = currentPlayer === "p1" ? "p2" : "p1";
+    updateScoreUI(foundObject, otherPlayer);
+    checkWinCondition(foundObject, otherPlayer);
+  }
+}
+
+function findPlayerByName(allPlayersArray, playerName) {
+  return allPlayersArray.find(
+    (obj) => obj.p1.p1name === playerName || obj.p2.p2name === playerName
+  );
+}
+
+function toggleActivePlayers() {
+  player0El.classList.toggle("player--active");
+  player1El.classList.toggle("player--active");
+}
+
+function disableButtons() {
+  btnRoll.disabled = true;
+  btnHold.disabled = true;
+}
+
+function enableButtons() {
+  btnRoll.disabled = false;
+  btnHold.disabled = false;
+}
+
+function updateScoreUI(foundObject, player) {
+  const playerEl = player === "p1" ? player0El : player1El;
+  const currentEl = player === "p1" ? current0El : current1El;
+  const scoreEl = player === "p1" ? score0El : score1El;
+  const playerCount = foundObject[player][player + "count"];
+  
+  currentEl.textContent = 0;
+  scoreEl.textContent = playerCount;
+}
+
+function checkWinCondition(foundObject, player) {
+  const playerEl = player === "p1" ? player0El : player1El;
+  const playerCount = foundObject[player][player + "count"];
+  
+  if (playerCount >= 100) {
+    playerEl.classList.remove("player--active");
+    playerEl.classList.add("player--winner");
+    hideButtons();
+  }
+}
+
+function hideButtons() {
+  btnRoll.style.display = "none";
+  btnHold.style.display = "none";
+}
+
+//New Game
+btnNew.addEventListener("click", ()=>{
+  location.reload();
+})
